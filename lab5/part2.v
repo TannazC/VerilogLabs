@@ -1,48 +1,70 @@
-module part2 (SW, KEY, LEDR);
-    input [1:0] SW; // SW[0]=resetn, SW[1]=w
-    input [0:0] KEY; // KEY[0]=clock
-    output [4:0] LEDR; // LEDR[4]=z, LEDR[3:0]=state y
+// Lab 5 - Part 2
+// Binary-encoded FSM (case-based): detect 0000 or 1111 (overlap allowed)
+// Tannaz C.
+// 2026-02-17
+// MIT License
+//
+// Objective:
+// Implement the same sequence detector as Part 1, but using binary state encoding
+// and a case-based state table (no manual D-input boolean derivations).
+// Input w is sampled on each clock. z=1 when the FSM reaches the "4 zeros" state
+// or the "4 ones" state. Overlap is allowed.
+// SW0=resetn (active-LOW), SW1=w, KEY0=clock.
+// LEDR4 shows z, LEDR3..0 shows the current state code.
 
-    // inputs
-    wire clk = KEY[0];
-    wire resetn = SW[0];
-    wire w = SW[1];
-    // state reg (current) and next state
-    reg [3:0] y, Y;
+module part2 (
+    input  [1:0] SW,          // SW0=resetn, SW1=w
+    input  [0:0] KEY,         // KEY0=clock
+    output [4:0] LEDR         // LEDR4=z, LEDR3..0=state
+);
 
-    // state codes for FSM
-    localparam A = 4'b0000, B = 4'b0001, C = 4'b0010, D = 4'b0011,
-    E = 4'b0100, F = 4'b0101, G = 4'b0110, H = 4'b0111,
-    I = 4'b1000;
+    wire clk    = KEY[0];      // FSM clock
+    wire resetn = SW[0];       // active-LOW reset
+    wire w      = SW[1];       // input symbol
 
-    // --- state table ---
+    reg  [3:0] y;              // current state (binary-coded)
+    reg  [3:0] Y;              // next state
+
+    localparam A = 4'b0000,    // start / no run
+               B = 4'b0001,    // seen 0
+               C = 4'b0010,    // seen 00
+               D = 4'b0011,    // seen 000
+               E = 4'b0100,    // seen 0000 (z=1)
+               F = 4'b0101,    // seen 1
+               G = 4'b0110,    // seen 11
+               H = 4'b0111,    // seen 111
+               I = 4'b1000;    // seen 1111 (z=1)
+
+    // state_table
+    // Next-state logic derived from the provided FSM diagram, coded as a case statement.
     always @(*) begin : state_table
-    Y = A; // CRITICAL: Default assignment to prevent latches
-    case (y)
-        A: if (w) Y = F; else Y = B;
-        B: if (w) Y = F; else Y = C;
-        C: if (w) Y = F; else Y = D;
-        D: if (w) Y = F; else Y = E;
-        E: if (w) Y = F; else Y = E;
-        F: if (w) Y = G; else Y = B;
-        G: if (w) Y = H; else Y = B;
-        H: if (w) Y = I; else Y = B;
-        I: if (w) Y = I; else Y = B;
-    endcase
+        Y = A;                 // default to avoid inferred latches
+        case (y)
+            A: Y = (w) ? F : B;
+            B: Y = (w) ? F : C;
+            C: Y = (w) ? F : D;
+            D: Y = (w) ? F : E;
+            E: Y = (w) ? F : E; // stay in E while w=0 (overlap for 00000...)
+            F: Y = (w) ? G : B;
+            G: Y = (w) ? H : B;
+            H: Y = (w) ? I : B;
+            I: Y = (w) ? I : B; // stay in I while w=1 (overlap for 11111...)
+            default: Y = A;
+        endcase
     end
 
-    // state registers
+    // state_FFs
+    // State register updates on the clock edge.
     always @(posedge clk) begin : state_FFs
         if (!resetn)
-        y <= A; // Use parameter for clarity
+            y <= A;            // reset to start state
         else
-        y <= Y;
+            y <= Y;            // load next state
     end
-    // Moore output and LEDs
-    reg z; // Changed to reg for proper assignment
-    always @(*) begin
-        z = (y == E) || (y == I); // Use || instead of |
-        end
-        assign LEDR[4] = z;
-        assign LEDR[3:0] = y;
+
+    wire z = (y == E) || (y == I);  // Moore output: high in states E or I
+
+    assign LEDR[4]   = z;      // display z
+    assign LEDR[3:0] = y;      // display current state code
+
 endmodule
