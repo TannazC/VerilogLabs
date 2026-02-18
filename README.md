@@ -1,11 +1,13 @@
-# Verilog FPGA Labs — Digital Design & VGA Systems
+# Verilog FPGA Labs — Digital Systems & FSM Design
 
 **Author:** Tannaz Chowdhury  
-**Focus:** FPGA-based digital systems, VGA graphics, and hardware-level game foundations  
+**Platform:** DE1-SoC (Cyclone V FPGA)  
+**Focus:** Digital logic, synchronous design, counters, and finite state machines  
 
-This repository contains five Verilog labs completed to build a strong foundation in digital logic, FPGA design, and real-time video output. The work emphasizes clean modular hardware design, timing correctness, and a deep understanding of how computer architecture concepts map directly onto physical hardware.
+This repository contains five structured Verilog labs completed on the DE1-SoC FPGA board.  
+The progression moves from basic combinational logic to full finite state machine systems with timed hardware control.
 
-The long-term objective of this work is to confidently design and run interactive systems and simple games on an FPGA using VGA output, structured finite state machines, and hardware-controlled datapaths.
+The objective of this work is to develop strong RTL intuition — understanding how digital systems behave at the level of clocks, registers, and signal transitions.
 
 ---
 
@@ -14,126 +16,149 @@ The long-term objective of this work is to confidently design and run interactiv
 These labs were completed to:
 
 - Strengthen understanding of synchronous digital systems
-- Bridge computer architecture theory with hardware implementation
-- Prepare for VGA-based graphics systems and FPGA game engines
-- Develop confidence with RTL design, simulation, and hardware debugging
-- Reinforce timing discipline and modular design patterns
+- Bridge theory (computer architecture & digital logic) with real hardware
+- Develop structured FSM design skills
+- Practice arithmetic datapath construction
+- Build timing-accurate systems using a 50 MHz clock
+- Gain confidence in simulation and FPGA debugging
 
 ---
 
-## Core Concepts Reinforced
+## Lab Breakdown
 
-### 1. Synchronous Digital Design
+### Lab 1 — Combinational Logic & Display Systems
 
-All systems were built using clocked logic and proper reset behavior.
+Focus: Foundational logic and signal mapping.
 
-Key takeaways:
-- Difference between combinational and sequential logic
-- Importance of edge-triggered registers
-- Setup and hold timing awareness
-- Avoiding unintended latches
-- Designing predictable state transitions
+Implemented:
+- Switch-to-LED wiring
+- 2-to-1 multiplexers (single-bit and 4-bit wide)
+- 3-to-1 multiplexer (structural composition)
+- 7-segment decoder using manually derived Boolean expressions
 
-This reinforces how processors and memory elements operate at the hardware level.
+Key Concepts:
+- Truth tables → Boolean equations  
+- Sum-of-products logic  
+- Vector signals and bit slicing  
+- Structural hardware composition  
 
 ---
 
-### 2. Finite State Machines (FSMs)
+### Lab 2 — Arithmetic & BCD Design
 
-Multiple labs required structured control logic using Moore and Mealy FSM patterns.
+Focus: Structured arithmetic hardware.
 
-Key takeaways:
+Implemented:
+- Decimal 7-segment display logic
+- Binary-to-decimal conversion
+- Ripple-carry adder using full adder modules
+- BCD adder with correction logic
+
+Key Concepts:
+- Full adder design
+- Carry propagation
+- Binary-coded decimal arithmetic
+- Datapath-style module composition
+
+---
+
+### Lab 3 — Latches & Flip-Flops
+
+Focus: Sequential storage elements and clock behavior.
+
+Implemented:
+- Gated RS latch
+- Gated D latch
+- Master–slave D flip-flop
+- Positive and negative edge-triggered flip-flops
+
+Key Concepts:
+- Level-sensitive vs edge-triggered storage
+- Clock-driven state transitions
+- Sequential timing behavior
+- Proper reset discipline
+
+---
+
+### Lab 4 — Counters & Timing Systems
+
+Focus: Synchronous counters and clock-enable timing design.
+
+Implemented:
+- Structural 8-bit counter (T flip-flop chain)
+- Behavioral 16-bit counter (`Q <= Q + 1`)
+- 1-second digit flipper (50 MHz driven)
+- Ticker-style scrolling display
+
+Key Concepts:
+- Wide counters for time scaling
+- Clock-enable generation (no derived clocks)
+- Modulo-N counting
+- Human-visible timing from high-frequency clocks
+
+---
+
+### Lab 5 — Finite State Machines & Control Systems
+
+Focus: FSM architecture and control/datapath separation.
+
+Implemented:
+- One-hot encoded sequence detector
+- Binary-encoded FSM using case statements
+- Morse-code transmitter including:
+  - Control FSM
+  - Shift register
+  - Length counter
+  - Half-second timing generator
+  - Dot/dash duration control
+
+Key Concepts:
+- Moore FSM design
 - State encoding strategies
-- Clean separation of control and datapath
-- Deterministic state transitions
-- Reset-state reliability
-- Designing scalable state machines
-
-FSM design directly connects to control units inside CPUs and GPU pipelines.
+- Controller + datapath separation
+- Structured hardware sequencing
 
 ---
 
-### 3. Datapath Design
+## Core Design Principles
 
-Arithmetic, counters, and register-based logic were implemented structurally.
+All designs follow strict synchronous rules:
 
-Key takeaways:
-- Register-transfer level (RTL) thinking
-- Building arithmetic using hardware operators
-- Designing counters and timing controllers
-- Resource-conscious hardware design
-
-Understanding datapaths strengthens comprehension of ALUs and pipeline stages in computer architecture.
-
----
-
-### 4. VGA Signal Generation
-
-A major milestone in preparation for FPGA-based games is generating valid VGA signals.
-
-Concepts applied:
-- Horizontal and vertical sync timing
-- Pixel coordinate counters
-- Frame timing and refresh rates
-- Resolution constraints
-- Color channel output control
-
-Key takeaway:
-Video output is entirely timing-driven. Every pixel depends on strict clock-cycle precision. This builds appreciation for how GPUs generate frames at the hardware level.
+- Single clock domain (CLOCK_50 when required)
+- No internally generated clocks
+- Edge-triggered state registers
+- Deterministic reset behavior
+- Clear separation of combinational and sequential logic
+- Modular and reusable components
 
 ---
 
-### 5. Modular Hardware Design
+## Simulation & Hardware Verification
 
-All designs were written with clear module separation and hierarchical structure.
+Each lab was:
 
-Principles followed:
-- Single-responsibility modules
-- Clean input/output interfaces
-- Parameterized design where appropriate
-- Reusable components
-- Clear signal naming
+- Simulated using ModelSim
+- Verified through waveform analysis
+- Implemented on DE1-SoC hardware
+- Tested using LEDs and 7-segment displays
 
-This mirrors scalable hardware system design and prepares for larger FPGA projects like game engines.
+This reinforces understanding of:
 
----
-
-### 6. Simulation and Verification
-
-Each design was tested through simulation before hardware deployment.
-
-Key takeaways:
-- Writing effective testbenches
-- Understanding waveform timing
-- Debugging race conditions
-- Validating reset behavior
-- Observing signal propagation over time
-
-Simulation builds the same debugging discipline required in processor and embedded system design.
+- Sequential timing behavior
+- State transitions across clock edges
+- Signal propagation and stability
+- Real-world FPGA debugging workflow
 
 ---
 
-### 7. Hardware Debugging
+## Architectural Relevance
 
-FPGA testing reinforced:
+These labs strengthen understanding of:
 
-- Clock domain awareness
-- Switch and button debouncing considerations
-- Observing behavior through LEDs and displays
-- Incremental testing methodology
-
-Hardware debugging develops intuition beyond what software-only testing can provide.
-
----
-
-## Architectural Connections
-
-These labs directly strengthen understanding of:
-
-- Register files
-- Control units
-- Timing pipelines
-- Memory-mapped I/O
+- Registers and state storage
+- Control unit design
+- Arithmetic datapaths
+- Clock-enable timing systems
 - Hardware parallelism
 - Deterministic execution models
 
@@ -141,25 +166,10 @@ Working at the RTL level clarifies how higher-level software ultimately executes
 
 ---
 
-## Preparation for FPGA Game Systems
-
-These labs lay the groundwork for:
-
-- VGA-based sprite engines
-- Collision detection hardware
-- Frame-based animation
-- Score counters and state logic
-- Real-time input handling
-- Structured game loops implemented in hardware
-
-Building graphics systems at the hardware level deepens understanding of performance constraints and parallel processing.
-
----
-
 ## Summary
 
-These five labs represent a foundational step toward advanced FPGA systems and hardware-based game design. They reinforce computer architecture principles while developing real hardware intuition.
+This repository documents progression from basic combinational logic to structured, timing-driven finite state systems.
 
-The goal is not just to write Verilog that works, but to understand why it works — at the level of clocks, registers, and signals.
+The goal is not simply functional Verilog — but disciplined hardware design grounded in clocked digital architecture.
 
-This repository documents that progression.
+This work represents a solid foundation for larger FPGA systems, real-time control designs, and advanced hardware projects.
