@@ -156,16 +156,6 @@ Building graphics systems at the hardware level deepens understanding of perform
 
 ---
 
-## Personal Development Goals Reinforced
-
-- Thinking in hardware, not software
-- Designing with timing in mind
-- Structuring clean Verilog modules
-- Debugging systematically
-- Translating theory into working systems
-
----
-
 ## Summary
 
 These five labs represent a foundational step toward advanced FPGA systems and hardware-based game design. They reinforce computer architecture principles while developing real hardware intuition.
